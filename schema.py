@@ -17,7 +17,7 @@ class Keyword(BaseModel):
     keyword: dict 
     
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "raw_data": "Conversation data set(.txt)",
                 "keyword": "keyword by text data"
