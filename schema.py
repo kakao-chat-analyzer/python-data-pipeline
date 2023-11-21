@@ -14,12 +14,12 @@ from typing import List
 #         }
 class Keyword(BaseModel):
     raw_data: str
-    keyword: dict 
+    # keyword: dict 
     
     class Config:
         json_schema_extra = {
             "example": {
                 "raw_data": "Conversation data set(.txt)",
-                "keyword": "keyword by text data"
+                # "keyword": "keyword by text data"
             }
         }
