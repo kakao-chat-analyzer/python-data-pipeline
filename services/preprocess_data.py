@@ -13,7 +13,7 @@ class Preprocessing_OS1:
         self._conversation = [] # 총 대화
         self._date = [] # 대화 날짜
         self._mergeConversation = [] # 하루 대화 총합
-        self._dailyMessageList = [] # 하루대화
+        self._dailyMessageList = [] # 하루 대화
         self._dailyMessageStr = ''
         self._dailyMessageCnt = 0
         # self.monthFlag = ''
@@ -92,8 +92,9 @@ class Preprocessing_OS1:
         5. 이모티콘 타입 1 (눈 중심)
             - ^^, ㅜㅜ
         """
-        pattern1 = "(\(.+?\))|([ㄴㅋㅎㅇzㅠㅜ!?~]{3,})|[,.]{2,}|([;:]{1}[\^'-]?[)(DPpboOX] )|([>ㅜㅠㅡ@+\^][ㅁㅇ0oO\._\-]*[\^ㅜㅠㅡ@+<];*)"
+        pattern1 = "(\(.+?\))|([ㄴㅋㅎㅇzㅠㅜ!?~]{3,})|[,.]{2,}|([;:]{1}[\^'-]?[)(DPpboOX] )|([>ㅜㅠㅡ@+\^][ㅁㅇ0oO\._\-]*[\^ㅜㅠㅡ@+<];*)|사진"
         message = re.sub(pattern1,'',message)
+        
         if message: #전처리 결과 대화가 있을 경우
             return message.strip()
         else:
@@ -183,8 +184,7 @@ class Preprocessing_OS2(Preprocessing_OS1):
             return 0
     def messagePreprocess(self,message:str):
         """ 대화 전처리 """
-        super().messagePreprocess(message)
-        return message
+        return super().messagePreprocess(message)
     
     def dailyConversation(self):
         """ 하루 대화 """
@@ -195,12 +195,12 @@ class Preprocessing_OS2(Preprocessing_OS1):
         num = self.isMessage(line)
         if num == 1: # 대화 시작
             line_set = re.findall(r'\[.+?\]|\[.+?\]|\S+', line)
+            
             name = line_set[0][1:-1]
             line_set[1] = self.today_date +' ' + line_set[1][1:-1]
-            message = line_set.pop()
-            message = self.messagePreprocess(message) # 대화 전처리
-            
-            self.dailyMessage(message) #메세지 종합
+            message = ' '.join(line_set[2:])
+            message_pre = self.messagePreprocess(message) # 대화 전처리
+            self.dailyMessage(message_pre) #메세지 종합
             self._dailyMessageCnt += 1
             
             line_sets = [line_set[1], name.strip(), message]
