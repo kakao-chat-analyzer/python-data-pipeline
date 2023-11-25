@@ -15,6 +15,7 @@ class Preprocessing_OS1:
         self._mergeConversation = [] # 하루 대화 총합
         self._dailyMessageList = [] # 하루대화
         self._dailyMessageStr = ''
+        self._dailyMessageCnt = 0
         # self.monthFlag = ''
 
 ################################################################################################
@@ -24,7 +25,7 @@ class Preprocessing_OS1:
 
     @property
     def date(self): return self._date
-        
+
     @property
     def mergeConversation(self): return self._mergeConversation
         
@@ -33,9 +34,24 @@ class Preprocessing_OS1:
 
     @property
     def dailyMessageStr(self): return self._dailyMessageStr
+        
+    @property
+    def dailyMessageCnt(self): return self._dailyMessageCnt
     
 ################################################################################################        
     # Main
+    def initVariable(self):
+        """ 인스턴스 변수 초기화 """
+        self._dailyMessageList = [] # 그날 대화 초기화
+        self._dailyMessageStr = ''
+        self._dailyMessageCnt = 0
+        
+    def dailyMessage(self, message: str):
+        """ 메시지 종합 """
+        if message:
+            self._dailyMessageList.append(message) #그 날 대화 종합 
+            self._dailyMessageStr = self._dailyMessageStr + ' ' + message
+        
     def isMessage(self,line:str):
         """ 
         메세지 특성 판별 
@@ -82,14 +98,12 @@ class Preprocessing_OS1:
             return message.strip()
         else:
             return '' #or None
-    
     def dailyConversation(self):
         """ 하루 대화 """
         if len(self._date) != 0:
-            totalConversation = [self._date[-1], self._dailyMessageList,self._dailyMessageStr]
+            totalConversation = [self._date[-1], self._dailyMessageList, self._dailyMessageStr, self._dailyMessageCnt]
             self.mergeConversation.append(totalConversation) # 대화 넣기
-            self._dailyMessageList = [] # 그날 대화 초기화
-            self._dailyMessageStr = ''
+            self.initVariable() #변수 초기화
         
     def conversationSplit(self,line:str):
         """ 대화 분리 """
@@ -100,10 +114,10 @@ class Preprocessing_OS1:
             pop_line = line_set.pop()
             name, message = pop_line.split(':', maxsplit=1) # 대화 이름, 대화 내용 분리
             message = self.messagePreprocess(message) # 대화 전처리
-            if message:
-                self._dailyMessageList.append(message) #그 날 대화 종합 
-                self._dailyMessageStr = self._dailyMessageStr + ' ' + message
 
+            self.dailyMessage(message) #메세지 종합        
+            self._dailyMessageCnt += 1
+            
             line_sets = line_set + [name.strip(), message]
             self._conversation.append(line_sets)
         elif num == 2: # 날짜
@@ -112,9 +126,7 @@ class Preprocessing_OS1:
             
         else: # 추가적 대화
             message = self.messagePreprocess(line) # 대화 전처리
-            if message:
-                self._dailyMessageList.append(message) #그 날 대화 종합 
-                self._dailyMessageStr = self._dailyMessageStr + ' ' + message
+            self.dailyMessage(message) #메세지 종합
 
     def changeDateType(self,line:str):
         """ 대화 날짜 타입 변경 """
@@ -137,6 +149,14 @@ class Preprocessing_OS2(Preprocessing_OS1):
         super().__init__()
         self.today_date = ''
         
+    def initVariable(self):
+        """ 인스턴스 변수 초기화 """
+        super().initVariable()
+    
+    def dailyMessage(self, message: str):
+        """ 메시지 종합 """
+        super().dailyMessage(message)
+
 ################################################################################################        
     # Main
     def isMessage(self, line:str):
@@ -161,7 +181,6 @@ class Preprocessing_OS2(Preprocessing_OS1):
             return 2
         else: # 추가적 대화이다.
             return 0
-    
     def messagePreprocess(self,message:str):
         """ 대화 전처리 """
         super().messagePreprocess(message)
@@ -180,10 +199,10 @@ class Preprocessing_OS2(Preprocessing_OS1):
             line_set[1] = self.today_date +' ' + line_set[1][1:-1]
             message = line_set.pop()
             message = self.messagePreprocess(message) # 대화 전처리
-            if message:
-                self._dailyMessageList.append(message) #그 날 대화 종합 
-                self._dailyMessageStr = self._dailyMessageStr + ' ' + message
-
+            
+            self.dailyMessage(message) #메세지 종합
+            self._dailyMessageCnt += 1
+            
             line_sets = [line_set[1], name.strip(), message]
             self._conversation.append(line_sets)
             
@@ -193,9 +212,7 @@ class Preprocessing_OS2(Preprocessing_OS1):
         else: # 추가적 대화
             try:
                 message = self.messagePreprocess(line) # 대화 전처리
-                if message:
-                    self._dailyMessageList.append(message) #그 날 대화 종합 
-                    self._dailyMessageStr = self._dailyMessageStr + ' ' + message
+                self.dailyMessage(message) #메세지 종합
             except:
                 pass
             
