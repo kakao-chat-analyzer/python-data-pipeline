@@ -1,6 +1,7 @@
 # !pip3 install -U deep-translator
+import time
 import torch
-from services import h2_model,h2_tokenizer
+from models import h2_model, h2_tokenizer
 from deep_translator import GoogleTranslator
 
 class KeyWords:
@@ -28,7 +29,6 @@ class KeyWords:
         2. 영어 -> 키워드 추출 (pretrained model)
         3. 영어 -> 한국어 변환
         """
-        import time
         pre = time.time()
         # 번역(한->영)
         text = self.translator(text,src='ko',trt='en')

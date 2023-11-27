@@ -1,7 +1,8 @@
 from fastapi import APIRouter, HTTPException, status, UploadFile, File
 from schema import Keyword
-from services.predict_data import KeyWords
-from services.preprocess_data import Preprocessing_OS1, Preprocessing_OS2
+from models.predict_data import KeyWords
+from preprocessing.Preprocessing_OS1 import Preprocessing_OS1
+from preprocessing.Preprocessing_OS2 import Preprocessing_OS2
 import re
 
 pipelines = APIRouter(
@@ -36,11 +37,10 @@ async def pipeline(file: UploadFile = File(...)) -> dict:
         if idx == (len(data) - 3): # 데이터 마지막이면
             pre_data.dailyConversation()
     # 여기서 전체 대화 데이터를 넘겨줘야한다.
-    text =pre_data.mergeConversation[-2]
+    text =pre_data.mergeConversation[-1]
     ## return value 
     ## frequently(당일 대화 개수), keyword(키워드), chattimes(당일 채팅 횟수), total_message(당일 대화)
-    return {"keywords": list(text)}
-
+    return {"keywordss": list(text)}
     
 # 키워드 추출 시
 @pipelines.post('/keyword')
