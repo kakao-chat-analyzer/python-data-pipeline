@@ -3,11 +3,23 @@ from schema import Keyword
 from models.predict_data import KeyWords
 from preprocessing.Preprocessing_OS1 import Preprocessing_OS1
 from preprocessing.Preprocessing_OS2 import Preprocessing_OS2
+from fastapi.responses import JSONResponse
 import re
 
 pipelines = APIRouter(
     tags=["Text"]
 )
+def convert_json(data):
+    date, daily_messages, totalMessage ,chatTimes= data 
+    json_data = {
+        "date": date,
+        "dailyMessages": daily_messages,
+        "frequently": chatTimes,
+        "keyword": None,
+        "chatTimes": chatTimes,
+        "totalMessage": totalMessage
+    }
+    return json_data
 
 # 파일 업로드 시
 @pipelines.post('/file')
@@ -36,11 +48,13 @@ async def pipeline(file: UploadFile = File(...)) -> dict:
             
         if idx == (len(data) - 3): # 데이터 마지막이면
             pre_data.dailyConversation()
+            
     # 여기서 전체 대화 데이터를 넘겨줘야한다.
-    text =pre_data.mergeConversation[-1]
-    ## return value 
+
+    json_array = [convert_json(data) for data in pre_data.mergeConversation]
     ## frequently(당일 대화 개수), keyword(키워드), chattimes(당일 채팅 횟수), total_message(당일 대화)
-    return {"keywordss": list(text)}
+    print(json_array[0])
+    return JSONResponse(content=json_array)
     
 # 키워드 추출 시
 @pipelines.post('/keyword')

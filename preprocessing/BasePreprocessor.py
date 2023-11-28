@@ -78,8 +78,7 @@ class BasePreprocessor(ABC):
         
     def dailyMessage(self, message: str):
         """ 메시지 종합 """
-        if message:
-            self._dailyMessageList.append(message) #그 날 대화 종합 
+        if message: 
             self._dailyMessageStr = self._dailyMessageStr + ' ' + message
 
     def messagePreprocess(self,message:str):

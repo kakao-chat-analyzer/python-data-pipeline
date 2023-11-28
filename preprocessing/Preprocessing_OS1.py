@@ -71,6 +71,7 @@ class Preprocessing_OS1(BasePreprocessor):
             line_set[0] = self.changeTimeType(line_set[0]) # 날짜 형식 변환 "%Y-%m-%d %H:%M"로
             pop_line = line_set.pop()
             name, message = pop_line.split(':', maxsplit=1) # 대화 이름, 대화 내용 분리
+            self.dailyMessageList.append(message) #그 날 대화 종합
             message = self.messagePreprocess(message) # 대화 전처리
 
             self.dailyMessage(message) #메세지 종합        
@@ -84,6 +85,7 @@ class Preprocessing_OS1(BasePreprocessor):
             self.date.append(self.changeDateType(line))
             
         else: # 추가적 대화
+            self.dailyMessageList.append(line) #그 날 대화 종합
             message = self.messagePreprocess(line) # 대화 전처리
             self.dailyMessage(message) #메세지 종합
 

@@ -43,6 +43,7 @@ class Preprocessing_OS2(BasePreprocessor):
             name = line_set[0][1:-1]
             line_set[1] = self.today_date +' ' + line_set[1][1:-1]
             message = ' '.join(line_set[2:])
+            self.dailyMessageList.append(message) #그 날 대화 종합
             message_pre = self.messagePreprocess(message) # 대화 전처리
             self.dailyMessage(message_pre) #메세지 종합
             self.dailyMessageCnt += 1
@@ -55,6 +56,7 @@ class Preprocessing_OS2(BasePreprocessor):
             self.date.append(self.changeDateType(line))
         else: # 추가적 대화
             try:
+                self.dailyMessageList.append(line) #그 날 대화 종합
                 message = self.messagePreprocess(line) # 대화 전처리
                 self.dailyMessage(message) #메세지 종합
             except:
