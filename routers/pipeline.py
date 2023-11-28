@@ -10,10 +10,11 @@ pipelines = APIRouter(
     tags=["Text"]
 )
 def convert_json(data):
-    date, daily_messages, totalMessage ,chatTimes= data 
+    date, daily_messages, daily_user, totalMessage ,chatTimes= data 
     json_data = {
         "date": date,
         "dailyMessages": daily_messages,
+        "dailyUser": daily_user,
         "frequently": chatTimes,
         "keyword": None,
         "chatTimes": chatTimes,

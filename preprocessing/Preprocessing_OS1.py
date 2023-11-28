@@ -68,26 +68,21 @@ class Preprocessing_OS1(BasePreprocessor):
         num = self.isMessage(line)
         if num == 1: # 대화 시작
             line_set = line.split(',', maxsplit=1)
+            
             line_set[0] = self.changeTimeType(line_set[0]) # 날짜 형식 변환 "%Y-%m-%d %H:%M"로
             pop_line = line_set.pop()
             name, message = pop_line.split(':', maxsplit=1) # 대화 이름, 대화 내용 분리
-            self.dailyMessageList.append(message) #그 날 대화 종합
-            message = self.messagePreprocess(message) # 대화 전처리
-
-            self.dailyMessage(message) #메세지 종합        
+            self.userName = name # 현재 대화하는 유저 이름
             
+            self.dailyPipeLine(message) #하루 대화 내용 저장 파이프라인
             self.dailyMessageCnt += 1
             
-            line_sets = line_set + [name.strip(), message]
-            self.conversation.append(line_sets)
         elif num == 2: # 날짜
-            self.dailyConversation() #그 전날 대화 총합
+            self.dailyConversation() #그 전날까지의 대화 저장 (total)
             self.date.append(self.changeDateType(line))
             
         else: # 추가적 대화
-            self.dailyMessageList.append(line) #그 날 대화 종합
-            message = self.messagePreprocess(line) # 대화 전처리
-            self.dailyMessage(message) #메세지 종합
+            self.dailyPipeLine(line) #하루 대화 내용 저장 파이프라인
 
     def changeDateType(self,line:str):
         """ 대화 날짜 타입 변경 """

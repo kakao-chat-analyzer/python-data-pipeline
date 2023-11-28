@@ -11,6 +11,8 @@ class BasePreprocessor(ABC):
         self._dailyMessageList = [] # 하루 대화
         self._dailyMessageStr = ''
         self._dailyMessageCnt = 0
+        self._userName = ''
+        self._dailyUserList = []
 
 ################################################################################################
     # Property
@@ -44,6 +46,15 @@ class BasePreprocessor(ABC):
     @dailyMessageCnt.setter
     def dailyMessageCnt(self, value): self._dailyMessageCnt = value   
     
+    @property
+    def userName(self): return self._userName
+    @userName.setter
+    def userName(self, value): self._userName = value   
+    
+    @property
+    def _dailyMessageUser(self): return self._dailyMessageUser
+    @_dailyMessageUser.setter
+    def _dailyMessageUser(self, value): self._dailyMessageUser = value  
     
 ################################################################################################        
     # AbstractMethod
@@ -72,6 +83,7 @@ class BasePreprocessor(ABC):
     def initVariable(self):
         """ 인스턴스 변수 초기화 """
         self._dailyMessageList = [] # 그날 대화 초기화
+        self._dailyUserList = [] # 그날 유저 초기화
         self._dailyMessageStr = ''
         self._dailyMessageCnt = 0
         
@@ -104,12 +116,22 @@ class BasePreprocessor(ABC):
             return '' #or None
         
     def dailyConversation(self):
-        """ 하루 대화 """
+        """ 하루 대화 종합 """
         if len(self._date) != 0:
-            totalConversation = [self._date[-1], self._dailyMessageList, self._dailyMessageStr, self._dailyMessageCnt]
+            totalConversation = [self._date[-1], self._dailyMessageList, self._dailyUserList ,self._dailyMessageStr, self._dailyMessageCnt]
             self.mergeConversation.append(totalConversation) # 대화 넣기
             self.initVariable() #변수 초기화
             
+    def dailyIndividualConversation(self,message:str):
+        """ 각 사용자의 대화 """
+        self._dailyMessageList.append(message) #그 날 대화 종합
+        self._dailyUserList.append(self.userName.strip()) #그 날 대화 이름
+    
+    def dailyPipeLine(self, message: str):
+        """ 하루 대화 내용 저장 파이프라인 """
+        self.dailyIndividualConversation(message) #각 사용자 별 대화 저장
+        message = self.messagePreprocess(message) # 대화 전처리
+        self.dailyMessage(message) #메세지 종합
 
     
 

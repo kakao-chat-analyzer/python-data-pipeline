@@ -41,24 +41,19 @@ class Preprocessing_OS2(BasePreprocessor):
             line_set = re.findall(r'\[.+?\]|\[.+?\]|\S+', line)
             
             name = line_set[0][1:-1]
+            self.userName = name # 현재 대화하는 유저 이름
             line_set[1] = self.today_date +' ' + line_set[1][1:-1]
             message = ' '.join(line_set[2:])
-            self.dailyMessageList.append(message) #그 날 대화 종합
-            message_pre = self.messagePreprocess(message) # 대화 전처리
-            self.dailyMessage(message_pre) #메세지 종합
+            
+            self.dailyPipeLine(message) #하루 대화 내용 저장 파이프라인 #메시지 값을 리턴 받아야 할 지 고민이다.
             self.dailyMessageCnt += 1
             
-            line_sets = [line_set[1], name.strip(), message]
-            self.conversation.append(line_sets)
-            
         elif num == 2: # 날짜
-            self.dailyConversation()
+            self.dailyConversation() #그 전날까지의 대화 저장 (total)
             self.date.append(self.changeDateType(line))
         else: # 추가적 대화
             try:
-                self.dailyMessageList.append(line) #그 날 대화 종합
-                message = self.messagePreprocess(line) # 대화 전처리
-                self.dailyMessage(message) #메세지 종합
+                self.dailyPipeLine(line) #하루 대화 내용 저장 파이프라인
             except:
                 pass
             
