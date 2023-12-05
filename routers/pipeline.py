@@ -9,16 +9,27 @@ import re
 pipelines = APIRouter(
     tags=["Text"]
 )
+def convert_dict(data):
+    """ dict data 변환기 """
+    # Input: {"고건영":64,"이 형진 20 소웨":48}
+    new_li = []
+    for i,j in data.items():
+        new_li.append(i)
+        new_li.append(j)
+    # Output: ['고건영',64,'이형진',52]
+    return new_li
+
 def convert_json(data):
-    date, daily_messages, daily_user, totalMessage ,chatTimes= data 
+    date, daily_messages, daily_user, totalMessage ,chatTimes, frequency = data # data 반환
+    frequency_li = convert_dict(frequency)
     json_data = {
         "date": date,
         "dailyMessages": daily_messages,
         "dailyUser": daily_user,
-        "frequently": chatTimes,
+        "frequently": frequency_li,
         "keyword": None,
         "chatTimes": chatTimes,
-        "totalMessage": totalMessage
+        "totalMessage": totalMessage,
     }
     return json_data
 
@@ -59,8 +70,10 @@ async def pipeline(file: UploadFile = File(...)) -> dict:
     
 # 키워드 추출 시
 @pipelines.post('/keyword')
-async def pipeline(item: Keyword) -> dict:
-    total_text = item.raw_data
+async def pipeline(item: Keyword) -> Keyword:
+    print("응답이 왔습니다.")
+    print(item.totalMessage)
+    total_text = item.totalMessage
             
     print("============= Keywords Extractor =============")
     # Predict Text -> result
@@ -69,7 +82,10 @@ async def pipeline(item: Keyword) -> dict:
     
     print("============= Finish =============")
     print("PipeLine End. Result: ", keywords_result)
-    
-    return {"keywords": keywords_result}
+    tot = {"totalMessage":keywords_result}
+    processed_item = Keyword(keywords=keywords_result, totalMessage=total_text)
+    return processed_item
+    # return {"totalMessage": keywords_result}
+    # return JSONResponse(content=tot)
 
 # curl -X POST -F "file=@/Users/goodyoung/Desktop/GIt/kakao-chat-analyzer/python-data-pipeline/data/test1.txt" http://127.0.0.1:8000/api/result
