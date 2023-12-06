@@ -72,7 +72,9 @@ class Preprocessing_OS1(BasePreprocessor):
             line_set[0] = self.changeTimeType(line_set[0]) # 날짜 형식 변환 "%Y-%m-%d %H:%M"로
             pop_line = line_set.pop()
             name, message = pop_line.split(':', maxsplit=1) # 대화 이름, 대화 내용 분리
-            self.userName = name # 현재 대화하는 유저 이름
+            self.dailyUserConversation(name) # 대화 유저(사용자) 처리
+            
+            
             
             self.dailyPipeLine(message) #하루 대화 내용 저장 파이프라인
             self.dailyMessageCnt += 1

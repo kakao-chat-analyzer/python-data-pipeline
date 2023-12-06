@@ -13,6 +13,7 @@ class BasePreprocessor(ABC):
         self._dailyMessageCnt = 0
         self._userName = ''
         self._dailyUserList = []
+        self._dailyMessageDict = {} # 사용자 별 대화 횟수
 
 ################################################################################################
     # Property
@@ -52,9 +53,14 @@ class BasePreprocessor(ABC):
     def userName(self, value): self._userName = value   
     
     @property
-    def _dailyMessageUser(self): return self._dailyMessageUser
-    @_dailyMessageUser.setter
-    def _dailyMessageUser(self, value): self._dailyMessageUser = value  
+    def dailyMessageUser(self): return self._dailyMessageUser
+    @dailyMessageUser.setter
+    def dailyMessageUser(self, value): self._dailyMessageUser = value  
+    
+    @property
+    def dailyMessageDict(self): return self._dailyMessageDict
+    @dailyMessageDict.setter
+    def dailyMessageDict(self, value): self._dailyMessageDict = value  
     
 ################################################################################################        
     # AbstractMethod
@@ -86,6 +92,7 @@ class BasePreprocessor(ABC):
         self._dailyUserList = [] # 그날 유저 초기화
         self._dailyMessageStr = ''
         self._dailyMessageCnt = 0
+        self._dailyMessageDict = {}
         
         
     def dailyMessage(self, message: str):
@@ -118,7 +125,7 @@ class BasePreprocessor(ABC):
     def dailyConversation(self):
         """ 하루 대화 종합 """
         if len(self._date) != 0:
-            totalConversation = [self._date[-1], self._dailyMessageList, self._dailyUserList ,self._dailyMessageStr, self._dailyMessageCnt]
+            totalConversation = [self._date[-1], self._dailyMessageList, self._dailyUserList ,self._dailyMessageStr, self._dailyMessageCnt, self._dailyMessageDict]
             self.mergeConversation.append(totalConversation) # 대화 넣기
             self.initVariable() #변수 초기화
             
@@ -132,6 +139,14 @@ class BasePreprocessor(ABC):
         self.dailyIndividualConversation(message) #각 사용자 별 대화 저장
         message = self.messagePreprocess(message) # 대화 전처리
         self.dailyMessage(message) #메세지 종합
+        
+    def dailyUserConversation(self, name):
+        """ 하루 사용자 대화 횟수 저장 """
+        self.userName = name.strip() # 현재 대화하는 유저 이름 저장
+        if name.strip() in self._dailyMessageDict: #유저 정보에 있다면 
+            self._dailyMessageDict[self.userName] += 1
+        else:
+            self._dailyMessageDict[self.userName] = 1
 
     
 

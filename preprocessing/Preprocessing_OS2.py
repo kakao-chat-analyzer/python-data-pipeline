@@ -41,7 +41,7 @@ class Preprocessing_OS2(BasePreprocessor):
             line_set = re.findall(r'\[.+?\]|\[.+?\]|\S+', line)
             
             name = line_set[0][1:-1]
-            self.userName = name # 현재 대화하는 유저 이름
+            self.dailyUserConversation(name) # 대화 유저(사용자) 처리
             line_set[1] = self.today_date +' ' + line_set[1][1:-1]
             message = ' '.join(line_set[2:])
             
