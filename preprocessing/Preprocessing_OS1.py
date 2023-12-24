@@ -73,9 +73,6 @@ class Preprocessing_OS1(BasePreprocessor):
             pop_line = line_set.pop()
             name, message = pop_line.split(':', maxsplit=1) # 대화 이름, 대화 내용 분리
             self.dailyUserConversation(name) # 대화 유저(사용자) 처리
-            
-            
-            
             self.dailyPipeLine(message) #하루 대화 내용 저장 파이프라인
             self.dailyMessageCnt += 1
             

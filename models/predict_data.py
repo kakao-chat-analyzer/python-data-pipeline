@@ -9,15 +9,20 @@ class KeyWords:
     
     def translator(self,text,src='ko',trt='en'):
         """ 번역기 """
+        if len(text) > 5000:
+            text = text[:4900]
         return GoogleTranslator(source=src, target=trt).translate(text)
 
     def extractor(self,text):
         """ 키워드 추출기 """
         # 문장 토큰화 (인코딩)
+        if len(text) > 5000:
+            text = text[:4900]
         input_ids = h2_tokenizer(text, return_tensors="pt").input_ids.to('cpu')
         with torch.no_grad():
             # 모델 predict
-            output = h2_model.generate(input_ids, max_length=300)
+            print(len(input_ids[0]))
+            output = h2_model.generate(input_ids, max_length=5000)
         # 문장 디코딩
         keywords = h2_tokenizer.decode(output[0], skip_special_tokens=True).lower()
         return keywords
